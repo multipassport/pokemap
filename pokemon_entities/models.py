@@ -30,10 +30,6 @@ class Pokemon(models.Model):
         if self.image:
             return self.image.url
 
-    def get_next_evolution(self):
-        if self.next_evolution:
-            return self.next_evolution
-
 
 class PokemonEntity(models.Model):
     pokemon = models.ForeignKey(
