@@ -20,7 +20,7 @@ class Pokemon(models.Model):
         verbose_name='Эволюция',
         blank=True, null=True,
         related_name='previous_evolution',
-        on_delete=models.CASCADE
+        on_delete=models.SET_NULL
         )
 
     def __str__(self):
@@ -33,10 +33,14 @@ class Pokemon(models.Model):
 
 class PokemonEntity(models.Model):
     pokemon = models.ForeignKey(
-        Pokemon, verbose_name='Тип покемона', on_delete=models.CASCADE
+        Pokemon,
+        related_name='pokemon_entity',
+        verbose_name='Тип покемона',
+        null=True,
+        on_delete=models.SET_NULL
         )
-    latitude = models.FloatField(verbose_name='Широта местоположения')
-    longtitude = models.FloatField(verbose_name='Долгота местоположения')
+    latitude = models.FloatField(verbose_name='Широта местоположения', null=True)
+    longtitude = models.FloatField(verbose_name='Долгота местоположения', null=True)
     appeared_at = models.DateTimeField(
         verbose_name='Появился в', blank=True, null=True
         )

@@ -49,38 +49,35 @@ def show_all_pokemons(request):
 
 
 def show_pokemon(request, pokemon_id):
-    for pokemon in Pokemon.objects.all():
-        pokemons = {
-            'pokemon_id': pokemon.id,
-            'description': pokemon.description,
-            'img_url': request.build_absolute_uri(pokemon.get_image_url()),
-            'title_ru': pokemon.title,
-            'title_en': pokemon.title_en,
-            'title_jp': pokemon.title_en,
-            }
-        if pokemon.next_evolution:
-            pokemons['next_evolution'] = {
-                'pokemon_id': pokemon.next_evolution.id,
-                'title_ru': pokemon.next_evolution.title,
-                'img_url': request.build_absolute_uri(
-                    pokemon.next_evolution.get_image_url())
-                }
+    pokemon = Pokemon.objects.get(id=pokemon_id)
+    
+    pokemons = {
+        'pokemon_id': pokemon.id,
+        'description': pokemon.description,
+        'img_url': request.build_absolute_uri(pokemon.get_image_url()),
+        'title_ru': pokemon.title,
+        'title_en': pokemon.title_en,
+        'title_jp': pokemon.title_en,
+        }
 
-        if pokemon.previous_evolution.all():
-            pokemons['previous_evolution'] = {
-                'pokemon_id': pokemon.previous_evolution.get().id,
-                'title_ru': pokemon.previous_evolution.get().title,
-                'img_url': request.build_absolute_uri(
-                    pokemon.previous_evolution.get().get_image_url())
-                }
-        if pokemon.id == int(pokemon_id):
-            requested_pokemon = Pokemon.objects.get(id=pokemon_id)
-            break
-    else:
-        return HttpResponseNotFound('<h1>Такой покемон не найден</h1>')
+    if pokemon.next_evolution:
+        pokemons['next_evolution'] = {
+            'pokemon_id': pokemon.next_evolution.id,
+            'title_ru': pokemon.next_evolution.title,
+            'img_url': request.build_absolute_uri(
+                pokemon.next_evolution.get_image_url())
+            }
+
+    if pokemon.previous_evolution.all():
+        pokemons['previous_evolution'] = {
+            'pokemon_id': pokemon.previous_evolution.get().id,
+            'title_ru': pokemon.previous_evolution.get().title,
+            'img_url': request.build_absolute_uri(
+                pokemon.previous_evolution.get().get_image_url())
+            }
 
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
-    for pokemon_entity in PokemonEntity.objects.filter(pokemon__id=pokemon_id):
+    for pokemon_entity in pokemon.pokemon_entity.filter(pokemon__id=pokemon_id):
         add_pokemon(
             folium_map, pokemon_entity.latitude,
             pokemon_entity.longtitude,
